@@ -1,6 +1,6 @@
 organization  := "com.github.wkicior"
 
-name := "notifications-history"
+name := "notification-plans"
 
 version       := "0.1"
 

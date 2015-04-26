@@ -6,7 +6,7 @@ import spray.json._
 import spray.testkit.Specs2RouteTest
 
 
-class ForecastNotificationsHistoryRSSpec extends Specification with Specs2RouteTest with ForecastNotificationServiceRS {
+class NotificationPlansRSSpec extends Specification with Specs2RouteTest with NotificationPlansServiceRS {
   def actorRefFactory = system
   
   "MyService" should {

@@ -3,13 +3,13 @@ package com.github.wkicior.helyeah.boundary
 import akka.actor.Actor
 import spray.routing._
 
-class ForecastNotificationsHistoryRSActor extends Actor with ForecastNotificationServiceRS {
+class ForecastNotificationsHistoryRSActor extends Actor with NotificationPlansServiceRS {
   def actorRefFactory = context
   def receive = runRoute(myRoute)
 }
 
 
-trait ForecastNotificationServiceRS extends HttpService {
+trait NotificationPlansServiceRS extends HttpService {
   import com.github.wkicior.helyeah.application.JsonProtocol._
   val myRoute =
     pathPrefix("ads") {
