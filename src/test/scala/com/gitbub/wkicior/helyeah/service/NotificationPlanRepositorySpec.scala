@@ -13,6 +13,7 @@ import com.mongodb.casbah.MongoClient
 import com.github.wkicior.helyeah.service.NotificationPlanRepository
 import com.github.wkicior.helyeah.service.NotificationPlansMongoDAO
 import akka.util.Timeout
+import com.github.wkicior.helyeah.service.GetAllNotificationPlansRequest
 
 /**
  * @author disorder
@@ -30,6 +31,10 @@ with WordSpecLike with Matchers with BeforeAndAfterAll {
      val mongoClient =  MongoClient("notification-plans-mongo", 27017)
      val db = mongoClient("notification-plans-test-db-2")
      val collection = db("notification-plans")
+     
+     override def getAllNotificaionPlans():Iterable[NotificationPlan] = {
+      return Vector(NotificationPlan("aaa"))
+    }
   }
 
   val notificationRepository = system.actorOf(NotificationPlanRepository.props(NotificationPlansMongoDAOTest))
@@ -40,5 +45,12 @@ with WordSpecLike with Matchers with BeforeAndAfterAll {
         notificationRepository ! "fail"
       }
     }
-  }  
+  }
+  "accept GetAllNotificationPlansRequest and return all notification plans" in {
+    implicit val timeout = Timeout(8000 milliseconds)
+    val notificationPlansFuture = notificationRepository ? GetAllNotificationPlansRequest
+    val notificationPlans = Await.result(notificationPlansFuture, timeout.duration).asInstanceOf[Iterable[NotificationPlan]];
+    notificationPlans.size should be > 0
+  }
+  
 }

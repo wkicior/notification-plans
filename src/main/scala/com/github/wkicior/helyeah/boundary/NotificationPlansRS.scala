@@ -12,6 +12,7 @@ import spray.json._
 import spray.client.pipelining._
 import com.github.wkicior.helyeah.service.GetNotificationPlansService
 import com.github.wkicior.helyeah.service.GetAllNotificationPlansRequest
+import com.github.wkicior.helyeah.service.SaveNotificationPlanService
 import akka.util.Timeout
 
 
@@ -24,6 +25,7 @@ class ForecastNotificationsHistoryRSActor extends Actor with NotificationPlansSe
 trait NotificationPlansServiceRS extends HttpService {
   import com.github.wkicior.helyeah.application.JsonProtocol._
   def getNotificationPlansService = actorRefFactory.actorOf(GetNotificationPlansService.props)
+  def saveNotificationPlanService = actorRefFactory.actorOf(SaveNotificationPlanService.props) 
   
   val myRoute =
     pathPrefix("notification-plans") {
@@ -34,6 +36,16 @@ trait NotificationPlansServiceRS extends HttpService {
             val notificationPlans:Iterable[NotificationPlan] = Await.result(notificationPlansFuture, timeout.duration).asInstanceOf[Iterable[NotificationPlan]]
             notificationPlans
           }
-      }     
+      } ~
+      post {
+           entity(as[NotificationPlan]) { postedNotification =>
+              complete {
+                implicit val timeout = Timeout(8000 milliseconds)
+                val notificationPlanFuture = saveNotificationPlanService ? postedNotification
+                val savedNotification: NotificationPlan = Await.result(notificationPlanFuture, timeout.duration).asInstanceOf[NotificationPlan]
+                savedNotification
+              }
+           }           
+        }
     }
 }

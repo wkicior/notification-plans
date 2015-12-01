@@ -1,8 +1,13 @@
 package com.github.wkicior.helyeah.service
+import com.novus.salat._
+import com.novus.salat.annotations._
+import com.novus.salat.global._
+import com.mongodb.casbah.Imports._
 import com.mongodb.casbah.MongoClient
 import com.mongodb.casbah.MongoCollection
 import com.mongodb.casbah.commons.conversions.scala.RegisterConversionHelpers
 import com.mongodb.casbah.commons.conversions.scala.RegisterJodaTimeConversionHelpers
+import com.github.wkicior.helyeah.model.NotificationPlan
 
 /**
  * @author disorder
@@ -13,6 +18,10 @@ abstract class NotificationPlansMongoDAO {
     
     def close() {
       mongoClient.close()
+    }
+
+    def getAllNotificaionPlans():Iterable[NotificationPlan] = {
+      collection.map(grater[NotificationPlan].asObject(_))
     }
 }
 object NotificationPlansMongoDAO extends NotificationPlansMongoDAO {
