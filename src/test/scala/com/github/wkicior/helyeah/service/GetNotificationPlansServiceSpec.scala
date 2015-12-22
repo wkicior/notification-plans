@@ -1,4 +1,4 @@
-package com.gitbub.wkicior.helyeah.service
+package com.github.wkicior.helyeah.service
 
 import akka.actor.{Actor, Props, ActorSystem}
 import akka.testkit.{TestProbe, EventFilter, ImplicitSender, TestKit}
@@ -9,8 +9,6 @@ import scala.concurrent.duration._
 import scala.concurrent.Future
 import org.joda.time.DateTime
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
-import com.github.wkicior.helyeah.service.GetNotificationPlansService
-import com.github.wkicior.helyeah.service.GetAllNotificationPlansRequest
 import com.github.wkicior.helyeah.model.NotificationPlan
 import akka.util.Timeout
 
@@ -21,8 +19,8 @@ import akka.util.Timeout
 class GetNotificationPlansServiceSpec (_system: ActorSystem) extends TestKit(_system) with ImplicitSender
 with WordSpecLike with Matchers with BeforeAndAfterAll {
   
-    def this() = this(ActorSystem("NotificationPlanExecutorSpec",
-    ConfigFactory.parseString("""akka.loggers = ["akka.testkit.TestEventListener"]""")))
+    def this() = this(ActorSystem("GetNotificationPlansServiceSpec",
+      ConfigFactory.parseString("""akka.loggers = ["akka.testkit.TestEventListener"]""")))
 
     override def afterAll {
       TestKit.shutdownActorSystem(system)

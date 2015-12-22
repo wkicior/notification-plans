@@ -18,12 +18,17 @@ object NotificationPlanRepository {
 class NotificationPlanRepository(dao:NotificationPlansMongoDAO) extends Actor {
   val log = Logging(context.system, this)
   val collection = NotificationPlansMongoDAO.collection
+  
   def receive = {
     case GetAllNotificationPlansRequest =>
       log.info("GetAllNotificationPlansRequest called")
       val notificationPlans: Iterable[NotificationPlan] = dao.getAllNotificaionPlans()
       log.info("found: " + notificationPlans)
       sender() ! notificationPlans
+    case np:NotificationPlan =>
+      log.info("Save notification plan" + np)
+      val savedNotification:NotificationPlan = dao.save(np)
+      sender() ! savedNotification
     case _ => log.error("Unknown message")
   }
 }

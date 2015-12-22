@@ -1,4 +1,4 @@
-package com.gitbub.wkicior.helyeah.service
+package com.github.wkicior.helyeah.service
 
 import akka.actor.{Actor, Props, ActorSystem}
 import akka.testkit.{TestProbe, EventFilter, ImplicitSender, TestKit}
@@ -10,10 +10,7 @@ import com.github.wkicior.helyeah.model._
 import org.joda.time.DateTime
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
 import com.mongodb.casbah.MongoClient
-import com.github.wkicior.helyeah.service.NotificationPlanRepository
-import com.github.wkicior.helyeah.service.NotificationPlansMongoDAO
 import akka.util.Timeout
-import com.github.wkicior.helyeah.service.GetAllNotificationPlansRequest
 
 /**
  * @author disorder
@@ -51,6 +48,13 @@ with WordSpecLike with Matchers with BeforeAndAfterAll {
     val notificationPlansFuture = notificationRepository ? GetAllNotificationPlansRequest
     val notificationPlans = Await.result(notificationPlansFuture, timeout.duration).asInstanceOf[Iterable[NotificationPlan]];
     notificationPlans.size should be > 0
+  }
+  "accept NotificationPlan, save it and return"in  {
+    implicit val timeout = Timeout(8000 milliseconds)
+    val npNew = NotificationPlan("aaa")
+    val notificationPlanFuture = notificationRepository ? npNew
+    val notificationPlan = Await.result(notificationPlanFuture, timeout.duration).asInstanceOf[NotificationPlan];
+    notificationPlan should be(npNew)
   }
   
 }
