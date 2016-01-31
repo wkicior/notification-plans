@@ -63,5 +63,12 @@ class NotificationPlansRSSpec extends Specification with Specs2RouteTest with No
         status should be (OK)
       }
     }
+    
+    "delete existing notification plan on DELETE /notification-plans{key} path" in {
+      Delete("/notification-plan/abcde123") ~> sealRoute(myRoute) ~> check {
+        status should be (OK)
+        responseAs[String] === "This is delete request abcde123"
+      }
+    }
   }
 }

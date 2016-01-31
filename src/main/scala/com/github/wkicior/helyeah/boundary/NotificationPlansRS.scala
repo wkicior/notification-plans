@@ -28,6 +28,13 @@ trait NotificationPlansServiceRS extends HttpService {
   def saveNotificationPlanService = actorRefFactory.actorOf(SaveNotificationPlanService.props) 
   
   val myRoute =
+    pathPrefix("notification-plan" / Rest) {
+        id => delete {
+          complete {
+            "This is delete request " + id
+          }
+      }
+    } ~
     pathPrefix("notification-plans") {
       get {
           complete {
@@ -46,6 +53,6 @@ trait NotificationPlansServiceRS extends HttpService {
                 savedNotification
               }
            }           
-        }
-    }
+      }
+    } 
 }

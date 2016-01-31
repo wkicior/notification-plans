@@ -10,6 +10,6 @@ import spray.json._
  * Created by disorder on 06.03.15.
  */
 object JsonProtocol extends DefaultJsonProtocol with SprayJsonSupport {
- implicit val notificationPlanFormat = jsonFormat1(NotificationPlan)
+ implicit val notificationPlanFormat = jsonFormat2(NotificationPlan)
 }
 

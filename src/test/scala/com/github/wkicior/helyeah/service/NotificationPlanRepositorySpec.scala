@@ -49,12 +49,13 @@ with WordSpecLike with Matchers with BeforeAndAfterAll {
     val notificationPlans = Await.result(notificationPlansFuture, timeout.duration).asInstanceOf[Iterable[NotificationPlan]];
     notificationPlans.size should be > 0
   }
-  "accept NotificationPlan, save it and return"in  {
+  "accept NotificationPlan, save it and return" in  {
     implicit val timeout = Timeout(8000 milliseconds)
     val npNew = NotificationPlan("aaa")
     val notificationPlanFuture = notificationRepository ? npNew
     val notificationPlan = Await.result(notificationPlanFuture, timeout.duration).asInstanceOf[NotificationPlan];
-    notificationPlan should be(npNew)
+    notificationPlan.email should be(npNew.email)
+    notificationPlan.id should not be null
   }
   
 }
