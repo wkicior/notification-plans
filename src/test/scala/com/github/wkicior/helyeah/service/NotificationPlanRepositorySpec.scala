@@ -40,7 +40,7 @@ with WordSpecLike with Matchers with BeforeAndAfterAll with MockFactory with One
     val notificationPlans:Iterable[NotificationPlan] = Vector(NotificationPlan("aaa"))
     (mockNotificationPlansMongoDAO.getAllNotificaionPlans _).expects().returning(notificationPlans)
     notificationRepositoryMocked ! GetAllNotificationPlansRequest
-    expectMsg(3 seconds, notificationPlans)
+    expectMsg(8 seconds, notificationPlans)
   }
   
   "accept NotificationPlan, save it and return" in  {
@@ -48,7 +48,7 @@ with WordSpecLike with Matchers with BeforeAndAfterAll with MockFactory with One
     val npNewAfterSave = NotificationPlan("aaa", Option[String]("1"))
     (mockNotificationPlansMongoDAO.save _).expects(npNew).returning(npNewAfterSave)
     notificationRepositoryMocked ! npNew
-    val notificationPlan:NotificationPlan = expectMsg(3 seconds, npNewAfterSave)
+    val notificationPlan:NotificationPlan = expectMsg(8 seconds, npNewAfterSave)
   }
   
   "accept DeleteNotificationPlansRequest and delete previously saved notification plan" in {

@@ -25,6 +25,7 @@ class NotificationPlansMongoDAOSpec extends Specification with Before {
    return an empty collection                                    $e1
    save new notification plan                                    $create
    return all notification plans                                 $getAll
+   delete saved notification plan                                $delete
                                                                  """
   val notificationsMongoDAO = NotificationPlansMongoDAOTest.collection
   
@@ -40,6 +41,13 @@ class NotificationPlansMongoDAOSpec extends Specification with Before {
   def getAll = {
     val plans:Iterable[NotificationPlan] = NotificationPlansMongoDAOTest.getAllNotificaionPlans()
     plans.size mustEqual 2
+  }
+  
+  def delete = {
+    val plans:Iterable[NotificationPlan] = NotificationPlansMongoDAOTest.getAllNotificaionPlans()
+    println(plans)
+    NotificationPlansMongoDAOTest.delete(plans.head.id.get)
+    notificationsMongoDAO.find().count() mustEqual 1
   }
   
   def before = NotificationPlansMongoDAOTest.db.dropDatabase()
