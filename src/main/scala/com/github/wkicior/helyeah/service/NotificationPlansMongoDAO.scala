@@ -33,6 +33,10 @@ abstract class NotificationPlansMongoDAO {
       collection += notificationPlanObj
       return grater[NotificationPlan].asObject(notificationPlanObj)    
     }
+    
+    def delete(id:String) = {
+      //TODO: implement
+    }
 }
 object NotificationPlansMongoDAO extends NotificationPlansMongoDAO {
   RegisterConversionHelpers()

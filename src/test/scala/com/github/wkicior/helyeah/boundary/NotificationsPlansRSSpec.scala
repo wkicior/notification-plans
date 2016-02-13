@@ -34,11 +34,19 @@ class NotificationPlansRSSpec extends Specification with Specs2RouteTest with No
     }
   })
   
+  val deleteNotificationPlanServiceMockedProps = Props(new Actor {
+    def receive = {
+      case id:String => sender() ! id      
+    }
+  })
+  
   val jsonNotification = """{
       "email": "test@gmail.com"}"""      
     
   override def getNotificationPlansService = actorRefFactory.actorOf(getNotificationPlansServiceMockedProps)
   override def saveNotificationPlanService = actorRefFactory.actorOf(saveNotificationPlanServiceMockedProps)
+  override def deleteNotificationPlanService = actorRefFactory.actorOf(deleteNotificationPlanServiceMockedProps)
+  
   "NotificationPlansServiceRS" should {   
     
     "leave GET requests to other paths unhandled" in {
@@ -66,8 +74,8 @@ class NotificationPlansRSSpec extends Specification with Specs2RouteTest with No
     
     "delete existing notification plan on DELETE /notification-plans{key} path" in {
       Delete("/notification-plan/abcde123") ~> sealRoute(myRoute) ~> check {
+        responseAs[String] === "abcde123"
         status should be (OK)
-        responseAs[String] === "This is delete request abcde123"
       }
     }
   }

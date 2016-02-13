@@ -26,9 +26,13 @@ class NotificationPlanRepository(dao:NotificationPlansMongoDAO) extends Actor {
       log.info("found: " + notificationPlans)
       sender() ! notificationPlans
     case np:NotificationPlan =>
-      log.info("Save notification plan" + np)
+      log.info("Save notification plan: " + np)
       val savedNotification:NotificationPlan = dao.save(np)
       sender() ! savedNotification
+    case dnpr:DeleteNotificationPlanRequest =>
+      log.info("Delete notification plan: " + dnpr)
+      dao.delete(dnpr.id)
+      sender() ! DeleteNotificationPlanResponse
     case _ => log.error("Unknown message")
   }
 }

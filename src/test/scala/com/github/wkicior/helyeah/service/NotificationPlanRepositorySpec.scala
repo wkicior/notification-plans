@@ -9,53 +9,51 @@ import scala.concurrent.duration._
 import com.github.wkicior.helyeah.model._
 import org.joda.time.DateTime
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
-import com.mongodb.casbah.MongoClient
 import akka.util.Timeout
+import org.scalamock.scalatest.MockFactory
+import org.scalatest.OneInstancePerTest
 
 /**
  * @author disorder
  */
 class NotificationPlanRepositorySpec (_system: ActorSystem) extends TestKit(_system) with ImplicitSender
-with WordSpecLike with Matchers with BeforeAndAfterAll {
+with WordSpecLike with Matchers with BeforeAndAfterAll with MockFactory with OneInstancePerTest {
   def this() = this(ActorSystem("NotificationPlanRepositorySpec",
     ConfigFactory.parseString("""akka.loggers = ["akka.testkit.TestEventListener"]""")))
 
   override def afterAll {
     TestKit.shutdownActorSystem(system)
   }
+    
+  val mockNotificationPlansMongoDAO = mock[NotificationPlansMongoDAO]
+  val notificationRepositoryMocked = system.actorOf(NotificationPlanRepository.props(mockNotificationPlansMongoDAO))
   
-  object NotificationPlansMongoDAOTest extends NotificationPlansMongoDAO {
-     val mongoClient =  MongoClient("notification-plans-mongo", 27017)
-     val db = mongoClient("notification-plans-test-db-2")
-     val collection = db("notification-plans")
-     
-     override def getAllNotificaionPlans():Iterable[NotificationPlan] = {
-      return Vector(NotificationPlan("aaa"))
-    }
-  }
-
-  val notificationRepository = system.actorOf(NotificationPlanRepository.props(NotificationPlansMongoDAOTest))
 
   "An NotificationRepository actor" must {
     "reject other message than GetAllNotificationPlansRequest" in {
       EventFilter.error("Unknown message", occurrences = 1) intercept {
-        notificationRepository ! "fail"
+        notificationRepositoryMocked ! "fail"
       }
     }
   }
   "accept GetAllNotificationPlansRequest and return all notification plans" in {
-    implicit val timeout = Timeout(8000 milliseconds)
-    val notificationPlansFuture = notificationRepository ? GetAllNotificationPlansRequest
-    val notificationPlans = Await.result(notificationPlansFuture, timeout.duration).asInstanceOf[Iterable[NotificationPlan]];
-    notificationPlans.size should be > 0
-  }
-  "accept NotificationPlan, save it and return" in  {
-    implicit val timeout = Timeout(8000 milliseconds)
-    val npNew = NotificationPlan("aaa")
-    val notificationPlanFuture = notificationRepository ? npNew
-    val notificationPlan = Await.result(notificationPlanFuture, timeout.duration).asInstanceOf[NotificationPlan];
-    notificationPlan.email should be(npNew.email)
-    notificationPlan.id should not be null
+    val notificationPlans:Iterable[NotificationPlan] = Vector(NotificationPlan("aaa"))
+    (mockNotificationPlansMongoDAO.getAllNotificaionPlans _).expects().returning(notificationPlans)
+    notificationRepositoryMocked ! GetAllNotificationPlansRequest
+    expectMsg(3 seconds, notificationPlans)
   }
   
+  "accept NotificationPlan, save it and return" in  {
+    val npNew = NotificationPlan("aaa")
+    val npNewAfterSave = NotificationPlan("aaa", Option[String]("1"))
+    (mockNotificationPlansMongoDAO.save _).expects(npNew).returning(npNewAfterSave)
+    notificationRepositoryMocked ! npNew
+    val notificationPlan:NotificationPlan = expectMsg(3 seconds, npNewAfterSave)
+  }
+  
+  "accept DeleteNotificationPlansRequest and delete previously saved notification plan" in {
+	    (mockNotificationPlansMongoDAO.delete _).expects("aaa")
+      val res = notificationRepositoryMocked ! DeleteNotificationPlanRequest("aaa")
+      expectMsg(DeleteNotificationPlanResponse)    
+  } 
 }

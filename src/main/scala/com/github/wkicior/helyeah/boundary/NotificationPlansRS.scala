@@ -14,6 +14,8 @@ import com.github.wkicior.helyeah.service.GetNotificationPlansService
 import com.github.wkicior.helyeah.service.GetAllNotificationPlansRequest
 import com.github.wkicior.helyeah.service.SaveNotificationPlanService
 import akka.util.Timeout
+import com.github.wkicior.helyeah.service.DeleteNotificationPlanService
+import com.github.wkicior.helyeah.service.DeleteNotificationPlanRequest
 
 
 class ForecastNotificationsHistoryRSActor extends Actor with NotificationPlansServiceRS {
@@ -26,12 +28,14 @@ trait NotificationPlansServiceRS extends HttpService {
   import com.github.wkicior.helyeah.application.JsonProtocol._
   def getNotificationPlansService = actorRefFactory.actorOf(GetNotificationPlansService.props)
   def saveNotificationPlanService = actorRefFactory.actorOf(SaveNotificationPlanService.props) 
+  def deleteNotificationPlanService = actorRefFactory.actorOf(DeleteNotificationPlanService.props)
   
   val myRoute =
     pathPrefix("notification-plan" / Rest) {
         id => delete {
           complete {
-            "This is delete request " + id
+            deleteNotificationPlanService ! DeleteNotificationPlanRequest(id)
+            id
           }
       }
     } ~

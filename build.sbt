@@ -23,7 +23,8 @@ libraryDependencies ++= {
     "org.scalatest" % "scalatest_2.11" % "2.2.4" % "test",
     "com.github.nscala-time" %% "nscala-time" % "1.8.0",
     "org.mongodb" 		  %% "casbah" % "2.8.1",
-    "com.novus" 		  %% "salat" % "1.9.9"
+    "com.novus" 		  %% "salat" % "1.9.9",
+    "org.scalamock" %% "scalamock-scalatest-support" % "3.2" % "test"
   )
 }
 
